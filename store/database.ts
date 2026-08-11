@@ -1,0 +1,103 @@
+import * as SQLite from 'expo-sqlite';
+
+let db: SQLite.SQLiteDatabase | null = null;
+
+export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
+  if (db) return db;
+  db = await SQLite.openDatabaseAsync('realestate.db');
+  await initSchema(db);
+  return db;
+}
+
+async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
+  await database.execAsync(`
+    PRAGMA journal_mode = WAL;
+    PRAGMA foreign_keys = ON;
+
+    -- Properties synced from the cloud bridge
+    CREATE TABLE IF NOT EXISTS properties (
+      id              INTEGER PRIMARY KEY,
+      owner_name      TEXT,
+      mobile_number   TEXT,
+      address         TEXT,
+      city            TEXT,
+      area_marla      REAL,
+      area_sqft       REAL,
+      plot_length     REAL,
+      plot_width      REAL,
+      property_type   TEXT DEFAULT 'Residential',
+      demand          REAL,
+      demand_currency TEXT DEFAULT 'PKR',
+      status          TEXT DEFAULT 'Available',
+      notes           TEXT,
+      agent_name      TEXT,
+      agent_mobile    TEXT,
+      images          TEXT DEFAULT '[]',
+      created_at      TEXT,
+      updated_at      TEXT,
+      synced_at       TEXT
+    );
+
+    -- Pending submissions created by this agent on mobile
+    -- Queued locally when offline, pushed to bridge when online
+    CREATE TABLE IF NOT EXISTS pending_submissions (
+      local_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+      submission_id   TEXT UNIQUE,
+      owner_name      TEXT NOT NULL,
+      mobile_number   TEXT,
+      address         TEXT,
+      city            TEXT,
+      area_marla      REAL,
+      area_sqft       REAL,
+      plot_length     REAL,
+      plot_width      REAL,
+      property_type   TEXT DEFAULT 'Residential',
+      demand          REAL,
+      demand_currency TEXT DEFAULT 'PKR',
+      notes           TEXT,
+      status          TEXT DEFAULT 'queued',
+      push_status     TEXT DEFAULT 'pending',
+      images          TEXT DEFAULT '[]',
+      created_at      TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Tracks last sync time so we only request updates
+    CREATE TABLE IF NOT EXISTS sync_meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT
+    );
+  `);
+
+  try {
+    // Try to add images column if it doesn't exist (for existing installs)
+    await database.execAsync(`ALTER TABLE pending_submissions ADD COLUMN images TEXT DEFAULT '[]';`);
+  } catch (e) {}
+
+  try {
+    await database.execAsync(`ALTER TABLE properties ADD COLUMN images TEXT DEFAULT '[]';`);
+  } catch (e) {}
+
+  try {
+    await database.execAsync(`ALTER TABLE properties ADD COLUMN video_url TEXT;`);
+  } catch (e) {}
+
+  // PMS & Subtype Columns Migration
+  const newCols = [
+    'property_subtype TEXT', 'purpose TEXT DEFAULT "sale"',
+    'beds INTEGER DEFAULT 0', 'baths INTEGER DEFAULT 0',
+    'kitchens INTEGER DEFAULT 0', 'parking INTEGER DEFAULT 0',
+    'furnished TEXT', 'rent_monthly REAL', 'security_deposit REAL',
+    'installments_available INTEGER DEFAULT 0'
+  ];
+  for (const col of newCols) {
+    try { await database.execAsync(`ALTER TABLE properties ADD COLUMN ${col};`); } catch(e) {}
+    try { await database.execAsync(`ALTER TABLE pending_submissions ADD COLUMN ${col};`); } catch(e) {}
+  }
+}
+
+export async function closeDatabase(): Promise<void> {
+  if (db) {
+    await db.closeAsync();
+    db = null;
+  }
+}

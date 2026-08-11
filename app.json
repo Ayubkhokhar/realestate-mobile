@@ -1,0 +1,83 @@
+{
+  "expo": {
+    "name": "Real Estate Manager Pro",
+    "slug": "realestate-manager-pro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "realestatepro",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F0F4F8"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ayubkhokhar.realestatemanagerpro",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to capture property photos",
+        "NSPhotoLibraryUsageDescription": "Used to select property photos",
+        "NSFaceIDUsageDescription": "Used for secure biometric login",
+        "NSLocationWhenInUseUsageDescription": "Used to auto-fill property location"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#0A0A0F"
+      },
+      "package": "com.ayubkhokhar.realestatemanagerpro",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#F0F4F8"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Real Estate Manager Pro to access your camera to capture property photos."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Real Estate Manager Pro to access your photos to upload property images."
+        }
+      ],
+      "expo-local-authentication"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f2824059-3aeb-4bb8-b228-170abd1f7cd6"
+      }
+    }
+  }
+}

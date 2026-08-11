@@ -1,0 +1,9 @@
+{
+  "common": { "appName": "מנהל נדל\"ן פרו", "tagline": "הנכסים שלך, בכל מקום", "loading": "טוען...", "error": "משהו השתבש", "retry": "נסה שוב", "save": "שמור", "cancel": "בטל", "delete": "מחק", "edit": "ערוך", "submit": "שלח", "next": "הבא", "back": "חזור", "done": "סיום", "search": "חיפוש", "filter": "סינון", "all": "הכל", "noResults": "לא נמצאו תוצאות", "noData": "אין נתונים זמינים", "confirm": "אשר", "yes": "כן", "no": "לא" },
+  "auth": { "login": "התחברות", "loginSubtitle": "ברוך הבא למנהל נדל\"ן פרו", "register": "יצירת חשבון", "email": "כתובת דוא\"ל", "password": "סיסמה", "fullName": "שם מלא", "phone": "מספר טלפון", "agencyName": "שם הסוכנות", "logout": "התנתקות", "pendingTitle": "ממתין לאישור", "pendingMessage": "חשבונך ממתין לאישור מנהל.", "signIn": "כניסה", "signUp": "הרשמה", "noAccount": "אין לך חשבון?", "hasAccount": "כבר יש לך חשבון?", "logoutConfirm": "האם אתה בטוח שברצונך להתנתק?" },
+  "home": { "goodMorning": "בוקר טוב", "goodAfternoon": "צהריים טובים", "goodEvening": "ערב טוב", "featured": "נכסים מובחרים", "recent": "רשימות אחרונות", "viewAll": "הצג הכל", "available": "זמין", "sold": "נמכר", "reserved": "שמור" },
+  "property": { "properties": "נכסים", "addProperty": "הוסף נכס", "ownerName": "שם הבעלים", "city": "עיר", "residential": "מגורים", "commercial": "מסחרי", "call": "התקשר לבעלים", "whatsapp": "וואטסאפ", "share": "שתף" },
+  "search": { "searchPlaceholder": "חפש נכסים, ערים, בעלים...", "filters": "מסננים", "applyFilters": "החל מסננים", "clearFilters": "נקה הכל", "noResults": "לא נמצאו נכסים התואמים לחיפוש שלך" },
+  "onboarding": { "slide1Title": "גלה נכסים מובחרים", "slide2Title": "הוסף רשימות בדרכים", "slide3Title": "הישאר מחובר", "getStarted": "בואו נתחיל", "skip": "דלג" },
+  "languages": { "en": "English", "ur": "اردو (Urdu)", "ar": "العربية (Arabic)", "he": "עברית (Hebrew)", "fr": "Français (French)", "es": "Español (Spanish)", "it": "Italiano (Italian)", "tr": "Türkçe (Turkish)", "ru": "Русский (Russian)" }
+}
