@@ -92,7 +92,7 @@ function Field({
   );
 }
 
-/** Cycle-through dropdown (no modal needed) */
+/** Modal-based Dropdown */
 function Dropdown({
   label,
   options,
@@ -106,19 +106,40 @@ function Dropdown({
   onChange: (v: string) => void;
   style?: object;
 }) {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <View style={[{ gap: 4 }, style]}>
       <Text style={s.fieldLabel}>{label}</Text>
       <TouchableOpacity
         style={s.dropdown}
         activeOpacity={0.75}
-        onPress={() => onChange(cycleNext(options, value))}
+        onPress={() => setModalVisible(true)}
       >
         <Text style={[s.dropdownText, value === options[0] && options[0] === 'Select Agent' && { color: C.textMuted }]}>
           {value}
         </Text>
         <Ionicons name="chevron-down" size={16} color={C.textMuted} />
       </TouchableOpacity>
+
+      <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
+        <TouchableOpacity style={s.modalOverlay} activeOpacity={1} onPress={() => setModalVisible(false)}>
+          <View style={s.dropdownModalContent}>
+            <Text style={s.dropdownModalTitle}>Select {label}</Text>
+            <ScrollView style={{ maxHeight: 300 }}>
+              {options.map((opt, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={s.dropdownOptionBtn}
+                  onPress={() => { onChange(opt); setModalVisible(false); }}
+                >
+                  <Text style={[s.dropdownOptionText, value === opt && { color: C.primary, fontWeight: '600' }]}>{opt}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -691,5 +712,25 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
     height: 44,
+  },
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24,
+  },
+  dropdownModalContent: {
+    backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400,
+  },
+  dropdownModalTitle: {
+    fontSize: 18, fontFamily: 'Inter-Bold', color: C.text, marginBottom: 16, textAlign: 'center',
+  },
+  dropdownOptionBtn: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: C.text,
+    textAlign: 'center',
   },
 });

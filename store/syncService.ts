@@ -321,7 +321,7 @@ export async function saveSubmissionLocally(data: {
       push_status, created_at
     ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',datetime('now'))`,
     [
-      data.owner_name,
+      data.owner_name ?? null,
       data.mobile_number ?? null,
       data.address ?? null,
       data.city ?? null,
