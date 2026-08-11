@@ -25,6 +25,16 @@ export type Property = {
   video_url?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  property_subtype?: string | null;
+  installments_available?: boolean | null;
+  purpose?: string | null;
+  beds?: number | null;
+  baths?: number | null;
+  kitchens?: number | null;
+  parking?: number | null;
+  furnished?: string | null;
+  rent_monthly?: number | null;
+  security_deposit?: number | null;
 };
 
 export type PropertyFilters = {

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
 import { useAuthStore } from '../../store/authStore';
+import { useSettingsStore } from '../../store/settingsStore';
 
 const C = Colors.light;
 
@@ -12,8 +13,7 @@ export default function BillingScreen() {
   const [loading, setLoading] = useState(false);
   
   const token = useAuthStore(s => s.token);
-  const settings = useAuthStore(s => s.settings);
-  const apiUrl = settings?.bridgeUrl || 'http://192.168.1.100:5000';
+  const apiUrl = useSettingsStore(s => s.apiUrl) || 'http://192.168.1.100:5000';
 
   async function fetchInvoices() {
     if (!token) return;
@@ -77,7 +77,9 @@ export default function BillingScreen() {
           invoices.map(inv => (
             <View key={inv.id} style={s.card}>
               <View style={s.cardHeader}>
-                <Text style={s.invoiceType}>{inv.type === 'rent' ? 'Rental Lease' : 'Installment Plan'}</Text>
+                <Text style={s.invoiceType}>
+                  {inv.type === 'rent' ? 'Rental Lease' : inv.type === 'direct_sale' ? 'Direct Sale' : 'Installment Plan'}
+                </Text>
                 <View style={[s.badge, inv.status === 'Paid' ? s.badgePaid : s.badgePending]}>
                   <Text style={[s.badgeText, inv.status === 'Paid' ? s.badgeTextPaid : s.badgeTextPending]}>
                     {inv.status}

@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { Layout } from '../../constants/Layout';
 import { useAuthStore } from '../../store/authStore';
+import { useSettingsStore } from '../../store/settingsStore';
 
 const C = Colors.light;
 
@@ -159,7 +160,8 @@ export default function AgentsScreen() {
   useEffect(() => {
     async function fetchAgents() {
       try {
-        const { apiUrl, token } = useAuthStore.getState();
+        const { token } = useAuthStore.getState();
+        const apiUrl = useSettingsStore.getState().apiUrl;
         const res = await fetch(`${apiUrl}/api/agents`, {
           headers: { Authorization: `Bearer ${token}` }
         });

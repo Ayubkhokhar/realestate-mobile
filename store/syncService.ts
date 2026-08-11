@@ -294,19 +294,32 @@ export async function saveSubmissionLocally(data: {
   plot_length?: number;
   plot_width?: number;
   property_type?: string;
+  property_subtype?: string;
+  purpose?: string;
+  beds?: number;
+  baths?: number;
+  kitchens?: number;
+  parking?: number;
+  furnished?: string;
+  rent_monthly?: number;
+  security_deposit?: number;
+  installments_available?: number;
   demand?: number;
   demand_currency?: string;
   notes?: string;
   images?: string[];
+  status?: string;
 }): Promise<void> {
   const db = await getDatabase();
   await db.runAsync(
     `INSERT INTO pending_submissions (
       owner_name, mobile_number, address, city,
       area_marla, area_sqft, plot_length, plot_width,
-      property_type, demand, demand_currency, notes, images,
+      property_type, property_subtype, purpose, beds, baths, kitchens, parking,
+      furnished, rent_monthly, security_deposit, installments_available,
+      demand, demand_currency, notes, status, images,
       push_status, created_at
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',datetime('now'))`,
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',datetime('now'))`,
     [
       data.owner_name,
       data.mobile_number ?? null,
@@ -317,9 +330,20 @@ export async function saveSubmissionLocally(data: {
       data.plot_length ?? null,
       data.plot_width ?? null,
       data.property_type ?? 'Residential',
+      data.property_subtype ?? null,
+      data.purpose ?? 'sale',
+      data.beds ?? 0,
+      data.baths ?? 0,
+      data.kitchens ?? 0,
+      data.parking ?? 0,
+      data.furnished ?? null,
+      data.rent_monthly ?? null,
+      data.security_deposit ?? null,
+      data.installments_available ?? 0,
       data.demand ?? null,
       data.demand_currency ?? 'PKR',
       data.notes ?? null,
+      data.status ?? 'queued',
       JSON.stringify(data.images ?? []),
     ]
   );
