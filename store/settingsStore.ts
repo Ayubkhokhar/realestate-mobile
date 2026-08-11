@@ -22,7 +22,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   language: 'en',
   biometricEnabled: false,
   notificationsEnabled: true,
-  apiUrl: 'http://10.233.19.214:5000',
+  apiUrl: 'http://192.168.100.26:5000',
 
   setTheme: (theme) => {
     AsyncStorage.setItem('theme', theme).catch(() => {});
