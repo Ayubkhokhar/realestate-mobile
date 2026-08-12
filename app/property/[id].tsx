@@ -15,10 +15,12 @@ const { width } = Dimensions.get('window');
 const C = Colors.light;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function formatPrice(amount: number, currency = 'PKR') {
-  if (amount >= 10000000) return `${currency} ${(amount / 10000000).toFixed(2)} Cr`;
-  if (amount >= 100000) return `${currency} ${(amount / 100000).toFixed(1)} L`;
-  return `${currency} ${amount.toLocaleString()}`;
+function formatPrice(amount: number | null | undefined, currency = 'PKR') {
+  const val = Number(amount);
+  if (!amount || isNaN(val) || val === 0) return 'N/A';
+  if (val >= 10000000) return `${currency} ${(val / 10000000).toFixed(2)} Cr`;
+  if (val >= 100000) return `${currency} ${(val / 100000).toFixed(1)} L`;
+  return `${currency} ${val.toLocaleString()}`;
 }
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string; border: string }> = {
@@ -145,12 +147,16 @@ export default function PropertyDetailScreen() {
                 <View style={styles.priceRow}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.priceLabel}>Monthly Rent</Text>
-                    <Text style={styles.priceAmount}>{formatPrice(property.demand, property.demand_currency)}</Text>
+                    <Text style={styles.priceAmount}>
+                      {formatPrice(property.rent_monthly ?? property.demand, property.demand_currency)}
+                    </Text>
                   </View>
-                  {property.rent_deposit ? (
+                  {property.security_deposit ? (
                     <View style={{ flex: 1, borderLeftWidth: 1, borderLeftColor: C.border, paddingLeft: 16 }}>
                       <Text style={styles.priceLabel}>Security Deposit</Text>
-                      <Text style={[styles.priceAmount, { fontSize: 18 }]}>{formatPrice(property.rent_deposit, property.demand_currency)}</Text>
+                      <Text style={[styles.priceAmount, { fontSize: 18 }]}>
+                        {formatPrice(property.security_deposit, property.demand_currency)}
+                      </Text>
                     </View>
                   ) : null}
                 </View>
@@ -166,10 +172,10 @@ export default function PropertyDetailScreen() {
           {/* Specs Row */}
           <View style={styles.specsRow}>
             {[
-              { icon: 'resize-outline',   label: 'Area',  value: `${property.area_marla} Marla` },
-              { icon: 'grid-outline',     label: 'Sqft',  value: `${property.area_sqft?.toFixed(0) ?? '—'}` },
-              { icon: 'home-outline',     label: 'Type',  value: property.property_type },
-              { icon: 'location-outline', label: 'City',  value: property.city },
+              { icon: 'resize-outline',   label: 'Area',  value: property.area_marla ? `${property.area_marla} Marla` : '—' },
+              { icon: 'grid-outline',     label: 'Sqft',  value: property.area_sqft ? `${Number(property.area_sqft).toFixed(0)}` : '—' },
+              { icon: 'home-outline',     label: 'Type',  value: property.property_type ?? '—' },
+              { icon: 'location-outline', label: 'City',  value: property.city ?? '—' },
             ].map((spec, i) => (
               <View key={i} style={styles.specCard}>
                 <View style={styles.specIconBox}>

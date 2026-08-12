@@ -40,8 +40,10 @@ const statusBg: Record<string, string> = {
 };
 
 function formatDemand(p: Property): string {
-  if (!p.demand && p.demand !== 0) return 'N/A';
-  const val = Number(p.demand);
+  // For rental properties, prefer rent_monthly over demand
+  const amount = (p.purpose === 'rent' && p.rent_monthly) ? p.rent_monthly : p.demand;
+  if (!amount && amount !== 0) return 'N/A';
+  const val = Number(amount);
   if (isNaN(val) || val === 0) return 'N/A';
   if (val >= 10000000) return `PKR ${(val / 10000000).toFixed(1)} Cr`;
   if (val >= 100000)   return `PKR ${(val / 100000).toFixed(0)} L`;
