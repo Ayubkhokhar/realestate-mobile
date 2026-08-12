@@ -164,6 +164,7 @@ export default function AddScreen() {
   const [ownerName, setOwnerName] = useState('');
   const [mobile, setMobile]       = useState('');
   const [agentRef, setAgentRef]   = useState('Select Agent');
+  const [description, setDescription] = useState('');
 
   // Property Details
   const [propertyCategory, setPropertyCategory] = useState('Residential');
@@ -319,6 +320,7 @@ export default function AddScreen() {
     setRentDeposit('');
     setImages([]);
     setSearchQuery('');
+    setDescription('');
     setPinCoords({ latitude: 31.5204, longitude: 74.3587 });
   }
 
@@ -354,7 +356,8 @@ export default function AddScreen() {
         installments_available: installmentsAvailable ? 1 : 0,
         demand: price ? parseFloat(price) : undefined,
         demand_currency: currency,
-        notes: agentRef !== 'Select Agent' ? `Agent Ref: ${agentRef}` : undefined,
+        agent_name: agentRef !== 'Select Agent' ? agentRef : undefined,
+        notes: description.trim() || undefined,
         images: images,
       });
 
@@ -440,6 +443,15 @@ export default function AddScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+
+            <Text style={[s.label, { marginTop: 16 }]}>Description (Optional)</Text>
+            <TextInput
+              style={[s.input, { height: 100, textAlignVertical: 'top' }]}
+              placeholder="e.g. Prime location, facing park..."
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
           </View>
 
           {/* ── Owner Information ──────────────────────────────────────────── */}

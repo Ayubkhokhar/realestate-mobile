@@ -171,7 +171,7 @@ export const usePropertyStore = create<PropertyState>((set) => ({
         `SELECT local_id as id, owner_name, mobile_number, address, city, area_marla, area_sqft,
          plot_length, plot_width, property_type, property_subtype, purpose, beds, baths,
          kitchens, parking, furnished, rent_monthly, security_deposit, installments_available,
-         demand, demand_currency, notes, status, images, push_status,
+         demand, demand_currency, notes, agent_name, status, images, push_status,
          created_at, NULL as updated_at, NULL as synced_at
          FROM pending_submissions WHERE ${pendingWhere} ORDER BY created_at DESC`,
         pendingParams

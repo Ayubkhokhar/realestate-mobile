@@ -194,6 +194,7 @@ async function pushPendingSubmissions(apiUrl: string, token: string): Promise<nu
             demand: sub.demand,
             demand_currency: sub.demand_currency,
             notes: sub.notes,
+            agent_name: sub.agent_name,
           },
         }),
       });

@@ -99,6 +99,7 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
       demand          REAL,
       demand_currency TEXT DEFAULT 'PKR',
       notes           TEXT,
+      agent_name      TEXT,
       status          TEXT DEFAULT 'queued',
       push_status     TEXT DEFAULT 'pending',
       images          TEXT DEFAULT '[]',
@@ -113,6 +114,9 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
   `);
 
   // Columns are now natively included in CREATE TABLE above.
+  
+  // Safe migrations for existing installs
+  try { await database.execAsync("ALTER TABLE pending_submissions ADD COLUMN agent_name TEXT;"); } catch (e) {}
 }
 
 export async function closeDatabase(): Promise<void> {
