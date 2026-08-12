@@ -26,6 +26,16 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
       plot_length     REAL,
       plot_width      REAL,
       property_type   TEXT DEFAULT 'Residential',
+      property_subtype TEXT,
+      purpose         TEXT DEFAULT 'sale',
+      beds            INTEGER DEFAULT 0,
+      baths           INTEGER DEFAULT 0,
+      kitchens        INTEGER DEFAULT 0,
+      parking         INTEGER DEFAULT 0,
+      furnished       TEXT,
+      rent_monthly    REAL,
+      security_deposit REAL,
+      installments_available INTEGER DEFAULT 0,
       demand          REAL,
       demand_currency TEXT DEFAULT 'PKR',
       status          TEXT DEFAULT 'Available',
@@ -33,6 +43,7 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
       agent_name      TEXT,
       agent_mobile    TEXT,
       images          TEXT DEFAULT '[]',
+      video_url       TEXT,
       created_at      TEXT,
       updated_at      TEXT,
       synced_at       TEXT
@@ -52,6 +63,16 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
       plot_length     REAL,
       plot_width      REAL,
       property_type   TEXT DEFAULT 'Residential',
+      property_subtype TEXT,
+      purpose         TEXT DEFAULT 'sale',
+      beds            INTEGER DEFAULT 0,
+      baths           INTEGER DEFAULT 0,
+      kitchens        INTEGER DEFAULT 0,
+      parking         INTEGER DEFAULT 0,
+      furnished       TEXT,
+      rent_monthly    REAL,
+      security_deposit REAL,
+      installments_available INTEGER DEFAULT 0,
       demand          REAL,
       demand_currency TEXT DEFAULT 'PKR',
       notes           TEXT,
@@ -68,31 +89,7 @@ async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
     );
   `);
 
-  try {
-    // Try to add images column if it doesn't exist (for existing installs)
-    await database.execAsync(`ALTER TABLE pending_submissions ADD COLUMN images TEXT DEFAULT '[]';`);
-  } catch (e) {}
-
-  try {
-    await database.execAsync(`ALTER TABLE properties ADD COLUMN images TEXT DEFAULT '[]';`);
-  } catch (e) {}
-
-  try {
-    await database.execAsync(`ALTER TABLE properties ADD COLUMN video_url TEXT;`);
-  } catch (e) {}
-
-  // PMS & Subtype Columns Migration
-  const newCols = [
-    'property_subtype TEXT', 'purpose TEXT DEFAULT "sale"',
-    'beds INTEGER DEFAULT 0', 'baths INTEGER DEFAULT 0',
-    'kitchens INTEGER DEFAULT 0', 'parking INTEGER DEFAULT 0',
-    'furnished TEXT', 'rent_monthly REAL', 'security_deposit REAL',
-    'installments_available INTEGER DEFAULT 0'
-  ];
-  for (const col of newCols) {
-    try { await database.execAsync(`ALTER TABLE properties ADD COLUMN ${col};`); } catch(e) {}
-    try { await database.execAsync(`ALTER TABLE pending_submissions ADD COLUMN ${col};`); } catch(e) {}
-  }
+  // Columns are now natively included in CREATE TABLE above.
 }
 
 export async function closeDatabase(): Promise<void> {
