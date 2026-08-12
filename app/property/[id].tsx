@@ -14,137 +14,6 @@ import { Layout } from '../../constants/Layout';
 const { width } = Dimensions.get('window');
 const C = Colors.light;
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const MOCK_PROPERTIES: Record<number, any> = {
-  1: {
-    id: 1,
-    title: 'DHA Phase 6 – 10 Marla',
-    owner_name: 'Ahmad Raza',
-    mobile_number: '+92-300-1234567',
-    city: 'Lahore',
-    area_marla: 10,
-    area_sqft: 2722.5,
-    demand: 18500000,
-    demand_currency: 'PKR',
-    status: 'Available',
-    property_type: 'Residential',
-    address: 'DHA Phase 6, Block K, Street 12, Lahore',
-    notes: 'Prime location, facing park, all utilities connected. Ideal for family residence with spacious rooms and a beautiful front lawn.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'sale',
-    beds: 4,
-    baths: 3,
-    kitchens: 1,
-    parking: 2,
-  },
-  2: {
-    id: 2,
-    title: 'Gulberg III – 1 Kanal House',
-    owner_name: 'Kamran Shah',
-    mobile_number: '+92-311-2345678',
-    city: 'Lahore',
-    area_marla: 20,
-    area_sqft: 5445,
-    demand: 42000000,
-    demand_currency: 'PKR',
-    status: 'Available',
-    property_type: 'Residential',
-    address: 'Gulberg III, Main Boulevard, Lahore',
-    notes: 'Corner plot with commercial potential. Prime Gulberg location with easy access to all major roads and markets.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'sale',
-    beds: 5,
-    baths: 4,
-    kitchens: 2,
-    parking: 3,
-  },
-  3: {
-    id: 3,
-    title: 'F-8/3 Commercial Plot',
-    owner_name: 'Bilal Hussain',
-    mobile_number: '+92-322-3456789',
-    city: 'Islamabad',
-    area_marla: 8,
-    area_sqft: 2178,
-    demand: 25000000,
-    demand_currency: 'PKR',
-    status: 'Reserved',
-    property_type: 'Commercial',
-    address: 'F-8/3, Islamabad',
-    notes: 'Ideal for commercial construction, near Blue Area. High foot traffic location with great visibility.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'sale',
-    beds: 0,
-    baths: 0,
-    kitchens: 0,
-    parking: 0,
-  },
-  4: {
-    id: 4,
-    title: 'Bahria Town – 5 Marla Apartment',
-    owner_name: 'Sara Khan',
-    mobile_number: '+92-333-4567890',
-    city: 'Rawalpindi',
-    area_marla: 5,
-    area_sqft: 1361,
-    demand: 75000,
-    rent_deposit: 225000,
-    demand_currency: 'PKR',
-    status: 'Available',
-    property_type: 'Residential',
-    address: 'Bahria Town Phase 8, Block B, Rawalpindi',
-    notes: 'Brand new construction with beautiful interior design. Modern fittings, gas, electricity and water available. Ideal for young families.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'rent',
-    beds: 3,
-    baths: 2,
-    kitchens: 1,
-    parking: 1,
-  },
-  5: {
-    id: 5,
-    title: 'Model Town Link Road',
-    owner_name: 'Asif Mirza',
-    mobile_number: '+92-300-5671234',
-    city: 'Lahore',
-    area_marla: 12,
-    area_sqft: 3267,
-    demand: 22000000,
-    demand_currency: 'PKR',
-    status: 'Sold',
-    property_type: 'Residential',
-    address: 'Model Town Extension, Lahore',
-    notes: 'Beautiful double-story house with a spacious garden. Recently renovated with premium tiles and modern kitchen.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'sale',
-    beds: 4,
-    baths: 3,
-    kitchens: 1,
-    parking: 2,
-  },
-  6: {
-    id: 6,
-    title: 'Blue Area Office Space',
-    owner_name: 'Hassan Corp',
-    mobile_number: '+92-300-6789012',
-    city: 'Islamabad',
-    area_marla: 4,
-    area_sqft: 1089,
-    demand: 35000000,
-    demand_currency: 'PKR',
-    status: 'Available',
-    property_type: 'Commercial',
-    address: 'Jinnah Avenue, Blue Area, Islamabad',
-    notes: 'Prime office space in a high-rise building. Fully furnished option available. Excellent for corporate offices.',
-    agent_name: 'Ayub Khokhar',
-    purpose: 'sale',
-    beds: 0,
-    baths: 2,
-    kitchens: 0,
-    parking: 4,
-  },
-};
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatPrice(amount: number, currency = 'PKR') {
   if (amount >= 10000000) return `${currency} ${(amount / 10000000).toFixed(2)} Cr`;
@@ -158,15 +27,31 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string; border: string }
   Sold:      { bg: '#FFF5F5', text: C.danger,  border: '#FED7D7' },
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
 import { usePropertyStore } from '../../store/propertyStore';
+import { useSettingsStore } from '../../store/settingsStore';
 
 export default function PropertyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const properties = usePropertyStore(s => s.properties);
-  const property = properties.find(p => p.id === parseInt(id || '1')) || MOCK_PROPERTIES[1];
+  const apiUrl = useSettingsStore(s => s.apiUrl);
+
+  // Handle both numeric IDs (synced) and string "pending_X" IDs (offline)
+  const property = properties.find(p => String(p.id) === String(id)) ?? null;
   const [saved, setSaved] = useState(false);
   const videoRef = useRef<Video>(null);
+
+  if (!property) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 24 }]}>
+        <Ionicons name="alert-circle-outline" size={64} color={C.textMuted} />
+        <Text style={{ fontSize: 18, fontFamily: 'Inter-Bold', color: C.text, marginTop: 16, textAlign: 'center' }}>Property Not Found</Text>
+        <Text style={{ fontSize: 13, color: C.textMuted, fontFamily: 'Inter-Regular', marginTop: 8, textAlign: 'center' }}>This property may have been removed or not yet synced.</Text>
+        <TouchableOpacity style={{ marginTop: 24, paddingHorizontal: 24, paddingVertical: 12, backgroundColor: C.primary, borderRadius: 12 }} onPress={() => router.back()}>
+          <Text style={{ color: '#fff', fontFamily: 'Inter-Bold' }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const isRent  = property.purpose === 'rent';
   const statusCfg = STATUS_CONFIG[property.status] ?? STATUS_CONFIG.Available;
@@ -198,7 +83,7 @@ export default function PropertyDetailScreen() {
         <View style={styles.hero}>
           {property.images && property.images.length > 0 ? (
             <Image
-              source={{ uri: `http://10.233.19.214:5000${property.images[0]}` }}
+              source={{ uri: property.images[0].startsWith('http') ? property.images[0] : `${apiUrl}${property.images[0]}` }}
               style={{ width: '100%', height: '100%' }}
               resizeMode="cover"
             />
@@ -405,25 +290,33 @@ export default function PropertyDetailScreen() {
 
           {/* Location Interactive Map */}
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Location: {property.city}</Text>
-            <Text style={{ fontSize: 13, color: C.textSecondary, marginBottom: 12, fontFamily: 'Inter-Regular' }}>{property.address}</Text>
-            <View style={{ borderRadius: 12, overflow: 'hidden', height: 220, borderWidth: 1, borderColor: C.border }}>
-              <MapView
-                style={{ flex: 1 }}
-                initialRegion={{
-                  latitude: 31.5204, // Default Lahore
-                  longitude: 74.3587,
-                  latitudeDelta: 0.05,
-                  longitudeDelta: 0.05,
-                }}
-              >
-                <Marker
-                  coordinate={{ latitude: 31.5204, longitude: 74.3587 }}
-                  title={property.title}
-                  description={property.address}
-                />
-              </MapView>
-            </View>
+            <Text style={styles.sectionTitle}>Location: {property.city ?? '—'}</Text>
+            <Text style={{ fontSize: 13, color: C.textSecondary, marginBottom: 12, fontFamily: 'Inter-Regular' }}>{property.address ?? 'Address not provided'}</Text>
+            {(property.latitude && property.longitude) ? (
+              <View style={{ borderRadius: 12, overflow: 'hidden', height: 220, borderWidth: 1, borderColor: C.border }}>
+                <MapView
+                  style={{ flex: 1 }}
+                  initialRegion={{
+                    latitude: property.latitude,
+                    longitude: property.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                >
+                  <Marker
+                    coordinate={{ latitude: property.latitude, longitude: property.longitude }}
+                    title={property.owner_name ?? ''}
+                    description={property.address ?? ''}
+                  />
+                </MapView>
+              </View>
+            ) : (
+              <View style={[styles.mapPlaceholder]}>
+                <Ionicons name="location-outline" size={28} color={C.textMuted} />
+                <Text style={styles.mapCity}>{property.city ?? '—'}</Text>
+                <Text style={styles.mapAddress}>Exact location not pinned</Text>
+              </View>
+            )}
           </View>
 
         </View>

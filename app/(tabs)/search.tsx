@@ -40,8 +40,9 @@ const statusBg: Record<string, string> = {
 };
 
 function formatDemand(p: Property): string {
-  if (!p.demand) return 'N/A';
+  if (!p.demand && p.demand !== 0) return 'N/A';
   const val = Number(p.demand);
+  if (isNaN(val) || val === 0) return 'N/A';
   if (val >= 10000000) return `PKR ${(val / 10000000).toFixed(1)} Cr`;
   if (val >= 100000)   return `PKR ${(val / 100000).toFixed(0)} L`;
   return `PKR ${val.toLocaleString()}`;

@@ -215,10 +215,10 @@ export const usePropertyStore = create<PropertyState>((set) => ({
       const db = await getDatabase();
 
       const total = await db.getFirstAsync<{ count: number }>(
-        `SELECT COUNT(*) as count FROM properties`
+        `SELECT (SELECT COUNT(*) FROM properties) + (SELECT COUNT(*) FROM pending_submissions) as count`
       );
       const available = await db.getFirstAsync<{ count: number }>(
-        `SELECT COUNT(*) as count FROM properties WHERE status = 'Available'`
+        `SELECT (SELECT COUNT(*) FROM properties WHERE status = 'Available') + (SELECT COUNT(*) FROM pending_submissions WHERE status = 'Available' OR status = 'queued') as count`
       );
       const sold = await db.getFirstAsync<{ count: number }>(
         `SELECT COUNT(*) as count FROM properties WHERE status = 'Sold'`
