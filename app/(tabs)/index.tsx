@@ -176,8 +176,10 @@ export default function DashboardScreen() {
   ];
 
   const formatDemand = (p: any) => {
-    if (!p.demand) return 'N/A';
-    const val = Number(p.demand);
+    const amount = (p.purpose === 'rent' && p.rent_monthly) ? p.rent_monthly : p.demand;
+    if (!amount && amount !== 0) return 'N/A';
+    const val = Number(amount);
+    if (isNaN(val) || val === 0) return 'N/A';
     if (val >= 10000000) return `PKR ${(val / 10000000).toFixed(1)} Cr`;
     if (val >= 100000)   return `PKR ${(val / 100000).toFixed(0)} L`;
     return `PKR ${val.toLocaleString()}`;
@@ -298,7 +300,7 @@ export default function DashboardScreen() {
               >
                 {prop.images && prop.images.length > 0 ? (
                   <Image
-                    source={{ uri: `http://10.233.19.214:5000${prop.images[0]}` }}
+                    source={{ uri: (prop.images[0].startsWith('http') || prop.images[0].startsWith('file')) ? prop.images[0] : `http://10.233.19.214:5000${prop.images[0]}` }}
                     style={styles.propThumb}
                     resizeMode="cover"
                   />

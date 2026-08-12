@@ -85,7 +85,7 @@ export default function PropertyDetailScreen() {
         <View style={styles.hero}>
           {property.images && property.images.length > 0 ? (
             <Image
-              source={{ uri: property.images[0].startsWith('http') ? property.images[0] : `${apiUrl}${property.images[0]}` }}
+              source={{ uri: (property.images[0].startsWith('http') || property.images[0].startsWith('file')) ? property.images[0] : `${apiUrl}${property.images[0]}` }}
               style={{ width: '100%', height: '100%' }}
               resizeMode="cover"
             />
