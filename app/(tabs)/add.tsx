@@ -202,7 +202,12 @@ export default function AddScreen() {
     if (!searchQuery.trim()) return;
     setSearching(true);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`, {
+        headers: {
+          'User-Agent': 'RealEstateAppMobile/1.0',
+          'Accept': 'application/json'
+        }
+      });
       const data = await res.json();
       if (data && data.length > 0) {
         setPinCoords({
