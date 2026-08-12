@@ -292,6 +292,36 @@ export default function AddScreen() {
 
   const [saving, setSaving] = useState(false);
 
+  function resetForm() {
+    setPurpose('sale');
+    setOwnerName('');
+    setMobile('');
+    setAgentRef('Select Agent');
+    setPropertyCategory('Residential');
+    setPropertySubtype('Plot');
+    setInstallmentsAvailable(false);
+    setStatus('Available');
+    setAreaMarla('');
+    setAreaSqft('');
+    setLength('');
+    setWidth('');
+    setAddress('');
+    setCity('');
+    setBeds('');
+    setBaths('');
+    setKitchens('');
+    setFloors('');
+    setParking('');
+    setFurnished('Unfurnished');
+    setCurrency('PKR');
+    setPrice('');
+    setRentMonthly('');
+    setRentDeposit('');
+    setImages([]);
+    setSearchQuery('');
+    setPinCoords({ latitude: 31.5204, longitude: 74.3587 });
+  }
+
   async function handleSave() {
     if (!ownerName.trim()) {
       Alert.alert('Required', 'Owner name is required.');
@@ -329,10 +359,10 @@ export default function AddScreen() {
       });
 
       // 2. Try to push to the Cloud Bridge immediately in the background
-      //    If there's no internet, syncService will keep it queued and retry next sync
       syncWithBridge().catch(() => {});
 
       setSaving(false);
+      resetForm();
       Alert.alert(
         '✅ Listing Saved',
         'Your listing has been saved to your device. It will be sent to the Desktop for approval when internet is available.',

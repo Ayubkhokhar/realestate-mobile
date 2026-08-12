@@ -42,6 +42,7 @@ export type PropertyFilters = {
   status?: string;
   city?: string;
   property_type?: string;
+  purpose?: string;
   min_marla?: number;
   max_marla?: number;
   min_price?: number;
@@ -93,59 +94,103 @@ export const usePropertyStore = create<PropertyState>((set) => ({
 
       const conditions: string[] = ['1=1'];
       const params: any[] = [];
+      const pendingConditions: string[] = ['1=1'];
+      const pendingParams: any[] = [];
 
       if (filters.query) {
-        conditions.push(
-          `(owner_name LIKE ? OR city LIKE ? OR address LIKE ? OR notes LIKE ?)`
-        );
         const q = `%${filters.query}%`;
+        conditions.push(`(owner_name LIKE ? OR city LIKE ? OR address LIKE ? OR notes LIKE ?)`);
         params.push(q, q, q, q);
+        pendingConditions.push(`(owner_name LIKE ? OR city LIKE ? OR address LIKE ? OR notes LIKE ?)`);
+        pendingParams.push(q, q, q, q);
       }
       if (filters.status && filters.status !== 'All') {
         conditions.push('status = ?');
         params.push(filters.status);
+        pendingConditions.push('status = ?');
+        pendingParams.push(filters.status);
       }
       if (filters.city) {
         conditions.push('city LIKE ?');
         params.push(`%${filters.city}%`);
+        pendingConditions.push('city LIKE ?');
+        pendingParams.push(`%${filters.city}%`);
       }
       if (filters.property_type && filters.property_type !== 'All') {
         conditions.push('property_type = ?');
         params.push(filters.property_type);
+        pendingConditions.push('property_type = ?');
+        pendingParams.push(filters.property_type);
+      }
+      if (filters.purpose && filters.purpose !== 'All') {
+        const purposeVal = filters.purpose === 'For Rent' ? 'rent' : 'sale';
+        conditions.push('purpose = ?');
+        params.push(purposeVal);
+        pendingConditions.push('purpose = ?');
+        pendingParams.push(purposeVal);
       }
       if (filters.min_marla != null) {
         conditions.push('area_marla >= ?');
         params.push(filters.min_marla);
+        pendingConditions.push('area_marla >= ?');
+        pendingParams.push(filters.min_marla);
       }
       if (filters.max_marla != null) {
         conditions.push('area_marla <= ?');
         params.push(filters.max_marla);
+        pendingConditions.push('area_marla <= ?');
+        pendingParams.push(filters.max_marla);
       }
       if (filters.min_price != null) {
         conditions.push('demand >= ?');
         params.push(filters.min_price);
+        pendingConditions.push('demand >= ?');
+        pendingParams.push(filters.min_price);
       }
       if (filters.max_price != null) {
         conditions.push('demand <= ?');
         params.push(filters.max_price);
+        pendingConditions.push('demand <= ?');
+        pendingParams.push(filters.max_price);
       }
 
       let orderBy = 'ORDER BY created_at DESC';
       if (filters.sort === 'price_asc') orderBy = 'ORDER BY demand ASC';
       else if (filters.sort === 'price_desc') orderBy = 'ORDER BY demand DESC';
 
+      // Load synced properties from bridge
       const where = conditions.join(' AND ');
       const rows = await db.getAllAsync<any>(
         `SELECT * FROM properties WHERE ${where} ${orderBy}`,
         params
       );
 
-      const properties: Property[] = rows.map((r) => ({
+      // Also load offline pending submissions so agent sees their own work immediately
+      const pendingWhere = pendingConditions.join(' AND ');
+      const pendingRows = await db.getAllAsync<any>(
+        `SELECT local_id as id, owner_name, mobile_number, address, city, area_marla, area_sqft,
+         plot_length, plot_width, property_type, property_subtype, purpose, beds, baths,
+         kitchens, parking, furnished, rent_monthly, security_deposit, installments_available,
+         demand, demand_currency, notes, status, images, push_status,
+         created_at, NULL as updated_at, NULL as synced_at
+         FROM pending_submissions WHERE ${pendingWhere} ORDER BY created_at DESC`,
+        pendingParams
+      );
+
+      // Mark pending as '⏳ Pending Sync' so user knows
+      const pendingProperties: Property[] = pendingRows.map((r: any) => ({
+        ...r,
+        id: `pending_${r.id}`,
+        status: r.status || '⏳ Pending Sync',
+        images: parseImages(r.images),
+      }));
+
+      const syncedProperties: Property[] = rows.map((r) => ({
         ...r,
         images: parseImages(r.images),
       }));
 
-      set({ properties, isLoading: false });
+      set({ properties: [...pendingProperties, ...syncedProperties], isLoading: false });
     } catch (e: any) {
       set({ error: e?.message ?? 'Failed to load properties', isLoading: false });
     }

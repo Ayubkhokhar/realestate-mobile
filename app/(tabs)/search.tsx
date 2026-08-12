@@ -131,6 +131,7 @@ export default function SearchScreen() {
     const filters: PropertyFilters = {};
     if (query) filters.query = query;
     if (activeStatus !== 'All') filters.status = activeStatus;
+    if (activePurpose !== 'All') filters.purpose = activePurpose;
     if (advCity) filters.city = advCity;
     if (advType !== 'All') filters.property_type = advType;
     if (marlaMin) filters.min_marla = parseFloat(marlaMin);
@@ -141,7 +142,7 @@ export default function SearchScreen() {
     else if (advSort === 'Price: High to Low') filters.sort = 'price_desc';
     else filters.sort = 'newest';
     loadProperties(filters);
-  }, [query, activeStatus, advCity, advType, marlaMin, marlaMax, priceMin, priceMax, advSort]);
+  }, [query, activeStatus, activePurpose, advCity, advType, marlaMin, marlaMax, priceMin, priceMax, advSort]);
 
   useEffect(() => { applyFilters(); }, [applyFilters]);
 
