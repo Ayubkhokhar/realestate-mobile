@@ -239,7 +239,7 @@ export default function AddScreen() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ['images', 'videos'] as any,
       allowsMultipleSelection: true,
       selectionLimit: 10 - images.length,
       quality: 1, // Let compressor handle it

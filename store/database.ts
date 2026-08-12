@@ -1,12 +1,35 @@
 import * as SQLite from 'expo-sqlite';
 
 let db: SQLite.SQLiteDatabase | null = null;
+let dbInitializing: Promise<SQLite.SQLiteDatabase> | null = null;
 
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  if (db) return db;
-  db = await SQLite.openDatabaseAsync('realestate.db');
-  await initSchema(db);
-  return db;
+  // If already initializing, wait for that to complete
+  if (dbInitializing) return dbInitializing;
+
+  // If we have a db, verify it is still usable
+  if (db) {
+    try {
+      await db.getFirstAsync('SELECT 1');
+      return db;
+    } catch (e) {
+      // Stale/closed native connection — discard and re-open
+      db = null;
+    }
+  }
+
+  dbInitializing = (async () => {
+    try {
+      const newDb = await SQLite.openDatabaseAsync('realestate.db');
+      await initSchema(newDb);
+      db = newDb;
+      return db;
+    } finally {
+      dbInitializing = null;
+    }
+  })();
+
+  return dbInitializing;
 }
 
 async function initSchema(database: SQLite.SQLiteDatabase): Promise<void> {
