@@ -444,7 +444,7 @@ export default function AddScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text style={[s.sectionTitle, { marginTop: 16 }]}>Description (Optional)</Text>
+            <Text style={[s.fieldLabel, { marginTop: 16 }]}>Description (Optional)</Text>
             <TextInput
               style={[s.input, { height: 100, textAlignVertical: 'top' }]}
               placeholder="e.g. Prime location, facing park..."

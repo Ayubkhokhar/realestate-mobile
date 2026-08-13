@@ -134,7 +134,7 @@ export default function PropertyDetailScreen() {
           </View>
 
           {/* Title + Address */}
-          <Text style={styles.title}>{property.title}</Text>
+          <Text style={styles.title}>{property.owner_name || 'Untitled Property'}</Text>
           <View style={styles.locationRow}>
             <Ionicons name="location-outline" size={14} color={C.textMuted} />
             <Text style={styles.address}>{property.address}</Text>
@@ -193,39 +193,31 @@ export default function PropertyDetailScreen() {
               <Text style={styles.sectionTitle}>Building Info</Text>
               <View style={styles.buildingRow}>
                 {(property.beds ?? 0) > 0 && (
-                  <View style={styles.gridItem}>
-                    <Ionicons name="bed-outline" size={20} color={C.primary} />
-                    <View style={styles.gridTextContainer}>
-                      <Text style={styles.gridValue}>{property.beds ?? 0}</Text>
-                      <Text style={styles.gridLabel}>Beds</Text>
-                    </View>
+                  <View style={styles.buildingChip}>
+                    <Ionicons name="bed-outline" size={18} color={C.primary} />
+                    <Text style={styles.buildingCount}>{property.beds}</Text>
+                    <Text style={styles.buildingLabel}>Beds</Text>
                   </View>
                 )}
                 {(property.baths ?? 0) > 0 && (
-                  <View style={styles.gridItem}>
-                    <Ionicons name="water-outline" size={20} color={C.primary} />
-                    <View style={styles.gridTextContainer}>
-                      <Text style={styles.gridValue}>{property.baths ?? 0}</Text>
-                      <Text style={styles.gridLabel}>Baths</Text>
-                    </View>
+                  <View style={styles.buildingChip}>
+                    <Ionicons name="water-outline" size={18} color={C.primary} />
+                    <Text style={styles.buildingCount}>{property.baths}</Text>
+                    <Text style={styles.buildingLabel}>Baths</Text>
                   </View>
                 )}
                 {(property.kitchens ?? 0) > 0 && (
-                  <View style={styles.gridItem}>
-                    <Ionicons name="restaurant-outline" size={20} color={C.primary} />
-                    <View style={styles.gridTextContainer}>
-                      <Text style={styles.gridValue}>{property.kitchens ?? 0}</Text>
-                      <Text style={styles.gridLabel}>Kitchens</Text>
-                    </View>
+                  <View style={styles.buildingChip}>
+                    <Ionicons name="restaurant-outline" size={18} color={C.primary} />
+                    <Text style={styles.buildingCount}>{property.kitchens}</Text>
+                    <Text style={styles.buildingLabel}>Kitchens</Text>
                   </View>
                 )}
                 {(property.parking ?? 0) > 0 && (
-                  <View style={styles.gridItem}>
-                    <Ionicons name="car-outline" size={20} color={C.primary} />
-                    <View style={styles.gridTextContainer}>
-                      <Text style={styles.gridValue}>{property.parking ?? 0}</Text>
-                      <Text style={styles.gridLabel}>Parking</Text>
-                    </View>
+                  <View style={styles.buildingChip}>
+                    <Ionicons name="car-outline" size={18} color={C.primary} />
+                    <Text style={styles.buildingCount}>{property.parking}</Text>
+                    <Text style={styles.buildingLabel}>Parking</Text>
                   </View>
                 )}
               </View>
