@@ -1,4 +1,4 @@
-/**
+﻿/**
  * syncService.ts
  *
  * CORE RULE: The Cloud Bridge (alwaysdata) NEVER stores files.
@@ -310,7 +310,6 @@ export async function saveSubmissionLocally(data: {
   notes?: string;
   images?: string[];
   status?: string;
-  agent_name?: string;
 }): Promise<void> {
   const db = await getDatabase();
   await db.runAsync(
@@ -320,8 +319,8 @@ export async function saveSubmissionLocally(data: {
       property_type, property_subtype, purpose, beds, baths, kitchens, parking,
       furnished, rent_monthly, security_deposit, installments_available,
       demand, demand_currency, notes, status, images,
-      push_status, created_at, agent_name
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',datetime('now'),?)`,
+      push_status, created_at
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',datetime('now'))`,
     [
       data.owner_name !== undefined ? data.owner_name : null,
       data.mobile_number !== undefined ? data.mobile_number : null,
@@ -347,7 +346,6 @@ export async function saveSubmissionLocally(data: {
       data.notes !== undefined ? data.notes : null,
       data.status !== undefined ? data.status : 'queued',
       JSON.stringify(data.images ?? []),
-      data.agent_name !== undefined ? data.agent_name : null,
     ]
   );
 }
