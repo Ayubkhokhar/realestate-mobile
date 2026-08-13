@@ -59,21 +59,21 @@ export default function PropertyDetailScreen() {
   const statusCfg = STATUS_CONFIG[property.status] ?? STATUS_CONFIG.Available;
 
   const hasBuildingInfo =
-    (property.beds > 0) || (property.baths > 0) ||
-    (property.kitchens > 0) || (property.parking > 0);
+    ((property.beds ?? 0) > 0) || ((property.baths ?? 0) > 0) ||
+    ((property.kitchens ?? 0) > 0) || ((property.parking ?? 0) > 0);
 
   const handleCall = () => Linking.openURL(`tel:${property.mobile_number}`);
 
   const handleWhatsApp = () => {
-    const num = property.mobile_number.replace(/[^0-9]/g, '');
-    const msg = `Hi, I'm interested in your property: ${property.title} – ${formatPrice(property.demand)}`;
+    const num = (property.mobile_number || '').replace(/[^0-9]/g, '');
+    const msg = `Hi, I'm interested in your property: ${property.owner_name} – ${formatPrice(property.demand)}`;
     Linking.openURL(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
   };
 
   const handleShare = async () => {
     await Share.share({
-      title: property.title,
-      message: `🏠 ${property.title}\n📍 ${property.city}\n💰 ${formatPrice(property.demand)}\n📐 ${property.area_marla} Marla\n\nShared via Real Estate Manager Pro`,
+      title: property.owner_name || 'Property',
+      message: `🏠 ${property.owner_name || 'Property'}\n📍 ${property.city}\n💰 ${formatPrice(property.demand)}\n📐 ${property.area_marla} Marla\n\nShared via Real Estate Manager Pro`,
     });
   };
 
@@ -192,32 +192,40 @@ export default function PropertyDetailScreen() {
             <View style={styles.card}>
               <Text style={styles.sectionTitle}>Building Info</Text>
               <View style={styles.buildingRow}>
-                {property.beds > 0 && (
-                  <View style={styles.buildingChip}>
-                    <Ionicons name="bed-outline" size={18} color={C.primary} />
-                    <Text style={styles.buildingCount}>{property.beds}</Text>
-                    <Text style={styles.buildingLabel}>Beds</Text>
+                {(property.beds ?? 0) > 0 && (
+                  <View style={styles.gridItem}>
+                    <Ionicons name="bed-outline" size={20} color={C.primary} />
+                    <View style={styles.gridTextContainer}>
+                      <Text style={styles.gridValue}>{property.beds ?? 0}</Text>
+                      <Text style={styles.gridLabel}>Beds</Text>
+                    </View>
                   </View>
                 )}
-                {property.baths > 0 && (
-                  <View style={styles.buildingChip}>
-                    <Ionicons name="water-outline" size={18} color={C.primary} />
-                    <Text style={styles.buildingCount}>{property.baths}</Text>
-                    <Text style={styles.buildingLabel}>Baths</Text>
+                {(property.baths ?? 0) > 0 && (
+                  <View style={styles.gridItem}>
+                    <Ionicons name="water-outline" size={20} color={C.primary} />
+                    <View style={styles.gridTextContainer}>
+                      <Text style={styles.gridValue}>{property.baths ?? 0}</Text>
+                      <Text style={styles.gridLabel}>Baths</Text>
+                    </View>
                   </View>
                 )}
-                {property.kitchens > 0 && (
-                  <View style={styles.buildingChip}>
-                    <Ionicons name="restaurant-outline" size={18} color={C.primary} />
-                    <Text style={styles.buildingCount}>{property.kitchens}</Text>
-                    <Text style={styles.buildingLabel}>Kitchen</Text>
+                {(property.kitchens ?? 0) > 0 && (
+                  <View style={styles.gridItem}>
+                    <Ionicons name="restaurant-outline" size={20} color={C.primary} />
+                    <View style={styles.gridTextContainer}>
+                      <Text style={styles.gridValue}>{property.kitchens ?? 0}</Text>
+                      <Text style={styles.gridLabel}>Kitchens</Text>
+                    </View>
                   </View>
                 )}
-                {property.parking > 0 && (
-                  <View style={styles.buildingChip}>
-                    <Ionicons name="car-outline" size={18} color={C.primary} />
-                    <Text style={styles.buildingCount}>{property.parking}</Text>
-                    <Text style={styles.buildingLabel}>Parking</Text>
+                {(property.parking ?? 0) > 0 && (
+                  <View style={styles.gridItem}>
+                    <Ionicons name="car-outline" size={20} color={C.primary} />
+                    <View style={styles.gridTextContainer}>
+                      <Text style={styles.gridValue}>{property.parking ?? 0}</Text>
+                      <Text style={styles.gridLabel}>Parking</Text>
+                    </View>
                   </View>
                 )}
               </View>
